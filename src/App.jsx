@@ -2,7 +2,7 @@ import React, { Suspense, useEffect, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment, Float, Sparkles } from "@react-three/drei";
 import { AnimatePresence, motion } from "framer-motion";
-import { BrowserRouter, Route, Routes, useLocation, useNavigate } from "react-router-dom";
+import { BrowserRouter, Link, Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowRight, ArrowUpRight, BrainCircuit, BriefcaseBusiness, CheckCircle2,
   ChevronDown, Cloud, Code2, Cpu, Database, Eye, HeartHandshake, Layers3,
@@ -96,26 +96,27 @@ function Header({ path, navigate }) {
   return (
     <>
       <header className="site-header">
-        <button className="brand" onClick={() => go("/")}>INVICTRA<span>®</span></button>
+        <Link className="brand" to="/" onClick={() => setOpen(false)}>INVICTRA<span>®</span></Link>
         <nav className="desktop-nav" aria-label="Main navigation">
-          {navItems.map(([label, to]) => <button key={to} className={path === to ? "nav-link active" : "nav-link"} onClick={() => go(to)}>{label}</button>)}
+          {navItems.map(([label, to]) => <Link key={to} className={path === to ? "nav-link active" : "nav-link"} to={to}>{label}</Link>)}
         </nav>
-        <button className="nav-cta" onClick={() => go("/contact")}>Let's Talk <ArrowUpRight size={15} /></button>
+        <Link className="nav-cta" to="/contact">Let's Talk <ArrowUpRight size={15} /></Link>
         <button className="mobile-toggle" aria-label="Toggle menu" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? <X /> : <Menu />}</button>
       </header>
       <AnimatePresence>
         {open && <motion.nav className="mobile-menu" initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }} aria-label="Mobile navigation">
-          {navItems.map(([label, to]) => <button key={to} onClick={() => go(to)}>{label}<ArrowUpRight size={16} /></button>)}
+          {navItems.map(([label, to]) => <Link key={to} onClick={() => setOpen(false)} to={to}>{label}<ArrowUpRight size={16} /></Link>)}
         </motion.nav>}
       </AnimatePresence>
     </>
   );
 }
 
-function SectionIntro({ eyebrow, title, accent, copy, centered = false }) {
+function SectionIntro({ eyebrow, title, accent, copy, centered = false, level = "h2" }) {
+  const Heading = level;
   return <motion.div className={`section-intro ${centered ? "centered" : ""}`} initial={{ opacity: 0, y: 22 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: .2 }}>
     <span className="eyebrow"><i /> {eyebrow}</span>
-    <h2>{title} <em>{accent}</em></h2>
+    <Heading>{title} <em>{accent}</em></Heading>
     {copy && <p>{copy}</p>}
   </motion.div>;
 }
@@ -131,7 +132,7 @@ function HomePage({ navigate }) {
         <span className="hero-kicker">✦ INNOVATION, ENGINEERED</span>
         <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>Turning Ideas<br />Into <span>Intelligence.</span></motion.h1>
         <h3>ENGINEERING THE FUTURE</h3>
-        <p>We bring technology and modern intelligence together to create elegant digital solutions that move businesses forward.</p>
+        <p>INVICTRA is a software development company in Hyderabad creating elegant digital solutions with engineering and modern intelligence.</p>
         <div className="hero-actions"><button className="button-primary" onClick={() => navigate("/services")}>Explore Our Services <ArrowRight size={16} /></button><button className="button-quiet" onClick={() => navigate("/about")}>Discover INVICTRA <ArrowUpRight size={15} /></button></div>
         <div className="hero-proof"><div className="proof-avatars"><b>I</b><b>N</b><b>V</b></div><span>Thoughtful engineering.<br /><strong>Meaningful outcomes.</strong></span></div>
       </div>
@@ -143,7 +144,7 @@ function HomePage({ navigate }) {
 }
 
 function AboutPage() {
-  return <main><PageHero eyebrow="ABOUT INVICTRA" title="Building a Smarter," accent="More Innovative Tomorrow." copy="At INVICTRA, we believe technology should solve meaningful problems and create opportunities for the future." />
+  return <main><PageHero eyebrow="ABOUT INVICTRA" title="Building a Smarter," accent="More Innovative Tomorrow." copy="As a technology partner in Hyderabad, INVICTRA combines software engineering, AI, data and cloud expertise to solve meaningful problems." />
     <section className="section-wrap about-grid">
       <div className="about-visual"><img src="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=80" alt="Contemporary glass office interior" /><div className="image-caption"><span>OUR APPROACH</span><strong>Technology with purpose.</strong></div></div>
       <div><SectionIntro eyebrow="WHAT GUIDES US" title="Curious minds," accent="meaningful work." copy="Our multidisciplinary team combines engineering craft, curiosity and care to help ambitious businesses move forward." /><div className="mission-grid">{[["Our Mission", Target, "To engineer intelligent, reliable and meaningful digital solutions that empower businesses."], ["Our Vision", Eye, "To become a trusted technology partner driving innovation through engineering and intelligence."], ["Our Values", HeartHandshake, "Innovation · Integrity · Excellence · Collaboration · Continuous Learning"]].map(([title, Icon, text]) => <article className="glass-card mission-card" key={title}><div className="icon-orb"><Icon /></div><h3>{title}</h3><p>{text}</p></article>)}</div></div>
@@ -164,27 +165,78 @@ function ServiceVisual({ type }) {
 }
 
 function ServicesPage() {
-  return <main><PageHero eyebrow="WHAT WE DO" title="Engineering intelligent" accent="digital solutions." copy="Nine focused capabilities, one thoughtful approach to building what comes next." />
+  return <main><PageHero eyebrow="WHAT WE DO" title="Engineering intelligent" accent="digital solutions." copy="Custom software development services spanning full-stack development, AI and Machine Learning, data science, Python, Java, cloud and IoT." />
     <section className="section-wrap services-page-grid">{serviceOptions.map(({ name, icon: Icon, desc, visual }, index) => <motion.article className={`service-card service-card-large ${visual}-card`} key={name} initial={{ opacity: 0, y: 18 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * .04 }} whileHover={{ y: -8, rotateX: 2, rotateY: -2 }}><div className="service-top"><span className="service-number">0{index + 1}</span><span className="service-icon"><Icon size={21} /></span></div><ServiceVisual type={visual} /><h3>{name}</h3><p>{desc}</p></motion.article>)}</section>
   </main>;
+}
+
+function CustomSelect({ value, onChange, options }) {
+  const [open, setOpen] = useState(false);
+  const [activeIndex, setActiveIndex] = useState(Math.max(0, options.indexOf(value)));
+  const containerRef = useRef();
+  useEffect(() => {
+    const close = (event) => {
+      if (!containerRef.current?.contains(event.target)) setOpen(false);
+    };
+    document.addEventListener("mousedown", close);
+    return () => document.removeEventListener("mousedown", close);
+  }, []);
+  const choose = (option) => {
+    onChange(option);
+    setActiveIndex(options.indexOf(option));
+    setOpen(false);
+  };
+  const onKeyDown = (event) => {
+    if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+      event.preventDefault();
+      setOpen(true);
+      setActiveIndex((index) => (index + (event.key === "ArrowDown" ? 1 : options.length - 1)) % options.length);
+    } else if (event.key === "Enter" || event.key === " ") {
+      event.preventDefault();
+      if (open) choose(options[activeIndex]);
+      else setOpen(true);
+    } else if (event.key === "Escape") {
+      setOpen(false);
+    }
+  };
+  return <div className={`custom-select ${open ? "is-open" : ""}`} ref={containerRef}>
+    <button type="button" className="custom-select-trigger" aria-haspopup="listbox" aria-expanded={open} onClick={() => setOpen(!open)} onKeyDown={onKeyDown}>
+      <span>{value || "Select a service"}</span><ChevronDown size={16} aria-hidden="true" />
+    </button>
+    <AnimatePresence>
+      {open && <motion.ul className="custom-select-menu" role="listbox" initial={{ opacity: 0, y: -6, scale: .98 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: -6, scale: .98 }} transition={{ duration: .16 }}>
+        {options.map((option, index) => <li key={option} role="option" aria-selected={value === option} className={value === option ? "selected" : ""}><button type="button" onMouseEnter={() => setActiveIndex(index)} onClick={() => choose(option)}>{option}{value === option && <CheckCircle2 size={14} />}</button></li>)}
+      </motion.ul>}
+    </AnimatePresence>
+  </div>;
 }
 
 function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
   const [form, setForm] = useState({ name: "", email: "", service: "", message: "" });
+  const [formError, setFormError] = useState("");
   const update = (event) => setForm({ ...form, [event.target.name]: event.target.value });
   const phoneLink = contactConfig.phone ? `tel:${contactConfig.phone}` : undefined;
-  return <main><section className="contact-page section-wrap"><div className="contact-info"><SectionIntro eyebrow="LET'S CONNECT" title="Let's Build" accent="Something Together." copy="Have a challenge in mind or an idea worth exploring? Get in touch." /><h3 className="contact-subtitle">Get in touch</h3>
+  const submit = (event) => {
+    event.preventDefault();
+    if (!form.name.trim() || !form.email.trim() || !form.service || !form.message.trim()) {
+      setFormError("Please complete your name, email, service and message.");
+      return;
+    }
+    setFormError("");
+    setSubmitted(true);
+  };
+  return <main><section className="contact-page section-wrap"><div className="contact-info"><SectionIntro eyebrow="LET'S CONNECT" title="Let's Build" accent="Something Together." copy="Start a software development enquiry or technology consultation with our Hyderabad team." level="h1" /><h3 className="contact-subtitle">Get in touch</h3>
     <a className="contact-row" href={`mailto:${contactConfig.email}`}><span><Mail /></span><div><small>EMAIL</small><strong>{contactConfig.email}</strong></div><ArrowUpRight /></a>
     {phoneLink ? <a className="contact-row" href={phoneLink}><span><Phone /></span><div><small>PHONE</small><strong>{contactConfig.phone}</strong></div><ArrowUpRight /></a> : <div className="contact-row muted-row"><span><Phone /></span><div><small>PHONE</small><strong>+91 (number coming soon)</strong></div></div>}
     <a className="contact-row" href={contactConfig.linkedin || "#contact"} onClick={(event) => !contactConfig.linkedin && event.preventDefault()}><span><Linkedin /></span><div><small>LINKEDIN</small><strong>{contactConfig.linkedin ? "Connect with us" : "Official profile coming soon"}</strong></div><ArrowUpRight /></a>
     <a className="contact-row" href="https://www.google.com/maps/search/?api=1&query=Hyderabad%2C%20Telangana%2C%20India"><span><MapPin /></span><div><small>LOCATION</small><strong>{contactConfig.location}</strong></div><ArrowUpRight /></a>
-  </div><motion.form className="contact-form glass-card" onSubmit={(event) => { event.preventDefault(); setSubmitted(true); }} initial={{ opacity: 0, y: 25 }} animate={{ opacity: 1, y: 0 }}>
+  </div><motion.form className="contact-form glass-card" onSubmit={submit} initial={{ opacity: 0, y: 25 }} animate={{ opacity: 1, y: 0 }}>
     {submitted ? <div className="success-state"><CheckCircle2 size={40} /><h3>Thanks for reaching out.</h3><p>Your message has been captured. We will be in touch soon.</p><button type="button" className="button-quiet" onClick={() => setSubmitted(false)}>Send another message</button></div> : <><div className="form-heading"><span>YOUR NEXT CHAPTER</span><h3>Tell us what you're imagining.</h3><p>Share a few details and let’s explore what’s possible.</p></div>
       <label>Name<input name="name" value={form.name} onChange={update} placeholder="How should we address you?" required /></label>
       <label>Email<input name="email" type="email" value={form.email} onChange={update} placeholder="you@company.com" required /></label>
-      <label>Service<span className="select-wrap"><select name="service" value={form.service} onChange={update} required><option value="">Select a service</option>{serviceOptions.map(({ name }) => <option key={name}>{name}</option>)}<option>Other</option></select><ChevronDown size={16} /></span></label>
-      <label>Message<textarea name="message" value={form.message} onChange={update} placeholder="A few details about your idea..." rows="3" required /></label><button className="button-primary form-submit" type="submit">Send Message <ArrowRight size={16} /></button></>}
+      <label>Service<CustomSelect value={form.service} onChange={(service) => setForm({ ...form, service })} options={[...serviceOptions.map(({ name }) => name), "Other"]} /></label>
+      <label>Message<textarea name="message" value={form.message} onChange={update} placeholder="A few details about your idea..." rows="3" required /></label>{formError && <p className="form-error" role="alert">{formError}</p>}<button className="button-primary form-submit" type="submit">Send Message <ArrowRight size={16} /></button></>}
   </motion.form></section><div className="skyline" aria-hidden="true" /></main>;
 }
 
@@ -192,8 +244,8 @@ function CareersPage({ navigate }) {
   return <main><PageHero eyebrow="CAREERS AT INVICTRA" title="Build What's Next" accent="With INVICTRA." copy="We believe great ideas come from curious minds, creative thinkers and people who love solving meaningful problems." /><section className="section-wrap careers-grid"><div className="career-orb"><div className="career-orb-ring" /><BriefcaseBusiness size={54} /></div><div><SectionIntro eyebrow="A PLACE TO GROW" title="Bring your curiosity." accent="Make an impact." copy="We value talented people, continuous learning and collaboration over titles or rigid paths." /><div className="career-columns"><div><h3>Life at INVICTRA</h3><ul><li>Innovation-driven thinking.</li><li>Continuous learning.</li><li>Collaboration.</li><li>Engineering excellence.</li><li>Creative problem-solving.</li></ul></div><div><h3>Who We Appreciate</h3><ul><li>Software developers.</li><li>AI and ML enthusiasts.</li><li>Data professionals.</li><li>Cloud engineers.</li><li>Creative problem-solvers.</li></ul></div></div><button className="button-primary" onClick={() => window.location.href = `mailto:${contactConfig.email}`}>Connect With Us <ArrowRight size={16} /></button></div></section></main>;
 }
 
-function Footer({ navigate }) {
-  return <footer className="footer section-wrap"><div><button className="brand" onClick={() => navigate("/")}>INVICTRA<span>®</span></button><p>Engineering the Future.</p></div><div className="footer-links">{navItems.map(([label, to]) => <button key={to} onClick={() => navigate(to)}>{label}</button>)}</div><div className="footer-contact"><a href={`mailto:${contactConfig.email}`}>{contactConfig.email}</a><span>{contactConfig.location}</span><small>© 2026 INVICTRA. All Rights Reserved.</small></div></footer>;
+function Footer() {
+  return <footer className="footer section-wrap"><div><Link className="brand" to="/">INVICTRA<span>®</span></Link><p>Engineering the Future.</p></div><nav className="footer-links" aria-label="Footer navigation">{navItems.map(([label, to]) => <Link key={to} to={to}>{label}</Link>)}</nav><div className="footer-contact"><a href={`mailto:${contactConfig.email}`}>{contactConfig.email}</a><span>{contactConfig.location}</span><small>© 2026 INVICTRA. All Rights Reserved.</small></div></footer>;
 }
 
 function NotFoundPage() {
@@ -201,19 +253,57 @@ function NotFoundPage() {
   return <main className="not-found section-wrap"><span className="eyebrow"><i /> PAGE NOT FOUND</span><h1>This page took a wrong turn.</h1><p>The page you requested does not exist, but there is plenty more to explore.</p><button className="button-primary" onClick={() => navigate("/")}>Back to Home <ArrowRight size={16} /></button></main>;
 }
 
+function SeoSchema({ path }) {
+  const pageLabels = { "/about": "About Us", "/services": "Services", "/contact": "Contact", "/careers": "Careers" };
+  const breadcrumbItems = [{ name: "Home", item: "https://invictra.in/" }];
+  if (pageLabels[path]) breadcrumbItems.push({ name: pageLabels[path], item: `https://invictra.in${path}` });
+  const organization = {
+    "@type": "Organization",
+    "@id": "https://invictra.in/#organization",
+    name: "INVICTRA",
+    url: "https://invictra.in/",
+    logo: "https://invictra.in/invictra-favicon.png",
+    email: contactConfig.email,
+    address: { "@type": "PostalAddress", addressLocality: "Hyderabad", addressRegion: "Telangana", addressCountry: "IN" },
+  };
+  const schemas = [
+    { "@context": "https://schema.org", ...organization },
+    { "@context": "https://schema.org", "@type": "WebSite", "@id": "https://invictra.in/#website", name: "INVICTRA | Engineering the Future", url: "https://invictra.in/", publisher: { "@id": "https://invictra.in/#organization" } },
+    { "@context": "https://schema.org", "@type": "BreadcrumbList", itemListElement: breadcrumbItems.map((item, index) => ({ "@type": "ListItem", position: index + 1, name: item.name, item: item.item })) },
+  ];
+  if (path === "/services") schemas.push({
+    "@context": "https://schema.org",
+    "@type": "Service",
+    name: "Custom Software Development Services",
+    serviceType: "Software development and technology solutions",
+    provider: { "@id": "https://invictra.in/#organization" },
+    areaServed: { "@type": "City", name: "Hyderabad" },
+    hasOfferCatalog: { "@type": "OfferCatalog", name: "INVICTRA services", itemListElement: serviceOptions.map(({ name, desc }) => ({ "@type": "Offer", itemOffered: { "@type": "Service", name, description: desc } })) },
+  });
+  return <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas) }} />;
+}
+
 function RoutedApp() {
   const { pathname: path } = useLocation();
   const navigate = useNavigate();
   useEffect(() => {
     const metadata = {
-      "/": ["INVICTRA | Engineering the Future", "INVICTRA creates elegant digital solutions powered by engineering and intelligence."],
-      "/about": ["About INVICTRA | Engineering the Future", "Discover the mission, vision and values behind INVICTRA."],
-      "/services": ["Services | INVICTRA", "Explore INVICTRA's full-stack, AI, data, cloud and custom software capabilities."],
-      "/contact": ["Contact | INVICTRA", "Start a conversation with INVICTRA in Hyderabad, Telangana, India."],
-      "/careers": ["Careers | INVICTRA", "Connect with INVICTRA and help build what comes next."],
+      "/": ["INVICTRA | Software Development Company in Hyderabad", "INVICTRA is a software development company in Hyderabad delivering custom technology solutions with AI, data and cloud expertise."],
+      "/about": ["About Us | INVICTRA Technology Company", "Learn about INVICTRA, a Hyderabad technology company combining software engineering, AI, data science and cloud capabilities."],
+      "/services": ["Software Development Services | INVICTRA", "Explore full-stack development, AI and Machine Learning, data science, Python, Java, Cloud and DevOps, IoT and custom software services."],
+      "/contact": ["Contact INVICTRA | Hyderabad Software Development", "Contact INVICTRA for software development enquiries and technology consultation in Hyderabad, Telangana."],
+      "/careers": ["Software Development Careers | INVICTRA", "Explore software development careers at INVICTRA and connect with a team focused on learning, engineering and meaningful work."],
     }[path] || ["INVICTRA | Engineering the Future", "Engineering intelligent digital solutions."];
     document.title = metadata[0];
     document.querySelector('meta[name="description"]')?.setAttribute("content", metadata[1]);
+    const keywords = {
+      "/": "software development company in Hyderabad, technology solutions, custom software",
+      "/about": "INVICTRA company profile, software engineering, AI, data science, cloud capabilities",
+      "/services": "full-stack development company, AI and Machine Learning solutions, Python development services, Java development services, Cloud and DevOps solutions, data science and analytics services",
+      "/contact": "software development enquiries Hyderabad, technology consultation, custom software development services",
+      "/careers": "software development careers, technology jobs Hyderabad, engineering careers",
+    }[path] || "INVICTRA software development company";
+    document.querySelector('meta[name="keywords"]')?.setAttribute("content", keywords);
     document.querySelector('meta[property="og:title"]')?.setAttribute("content", metadata[0]);
     document.querySelector('meta[property="og:description"]')?.setAttribute("content", metadata[1]);
     let canonical = document.querySelector('link[rel="canonical"]');
@@ -224,7 +314,7 @@ function RoutedApp() {
     }
     canonical.href = `https://invictra.in${path === "/" ? "/" : path}`;
   }, [path]);
-  return <div className="site-shell"><div className="ambient ambient-one" /><div className="ambient ambient-two" /><Header path={path} navigate={navigate} /><AnimatePresence mode="wait"><motion.div key={path} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: .28 }}><Routes><Route path="/" element={<HomePage navigate={navigate} />} /><Route path="/about" element={<AboutPage />} /><Route path="/services" element={<ServicesPage />} /><Route path="/contact" element={<ContactPage />} /><Route path="/careers" element={<CareersPage />} /><Route path="*" element={<NotFoundPage />} /></Routes></motion.div></AnimatePresence><Footer navigate={navigate} /></div>;
+  return <div className="site-shell"><SeoSchema path={path} /><div className="ambient ambient-one" /><div className="ambient ambient-two" /><Header path={path} navigate={navigate} /><AnimatePresence mode="wait"><motion.div key={path} initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }} transition={{ duration: .28 }}><Routes><Route path="/" element={<HomePage navigate={navigate} />} /><Route path="/about" element={<AboutPage />} /><Route path="/services" element={<ServicesPage />} /><Route path="/contact" element={<ContactPage />} /><Route path="/careers" element={<CareersPage />} /><Route path="*" element={<NotFoundPage />} /></Routes></motion.div></AnimatePresence><Footer /></div>;
 }
 
 function App() {
