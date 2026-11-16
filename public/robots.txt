@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://invictra.in/sitemap.xml
